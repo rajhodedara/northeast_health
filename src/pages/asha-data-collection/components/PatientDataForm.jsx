@@ -3,7 +3,9 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
-
+// --- ADD THESE TWO LINES ---
+const NPOINT_URL = 'https://api.npoint.io/09942530f105bf8e8e2b';
+// --------------------------
 
 const PatientDataForm = ({ onSubmit, onSaveDraft, isOffline, currentLanguage }) => {
   const [formData, setFormData] = useState({
@@ -198,51 +200,87 @@ const PatientDataForm = ({ onSubmit, onSaveDraft, isOffline, currentLanguage }) 
     return Object.keys(newErrors)?.length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
+  // ... (rest of your component code above handleSubmit) ...
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // 1. First, GET the current data from npoint
+    const getResponse = await fetch(NPOINT_URL);
+    if (!getResponse.ok) {
+        throw new Error('Failed to fetch existing data from npoint.');
+    }
+    let records = await getResponse.json();
     
-    if (!validateForm()) {
-      return;
+    // Ensure records is an array
+    if (!Array.isArray(records)) {
+        records = [];
+    }
+    
+    // 2. Add your new form data to the array
+    // (This includes your mock AI and villageId logic from before)
+    const submissionData = {
+      ...formData,
+      id: `patient_${Date.now()}`,
+      submittedAt: new Date().toISOString(),
+    };
+    
+    let dynamicSimulatedRisk = 'Low';
+    const hasWaterborneSymptoms = submissionData.symptoms.includes('diarrhea') || submissionData.symptoms.includes('vomiting');
+    if (hasWaterborneSymptoms) {
+        dynamicSimulatedRisk = Math.random() < 0.7 ? 'High' : 'Medium';
+    }
+    
+    const mockVillageIds = ['village_1', 'village_2', 'village_3', 'village_4', 'village_5'];
+    const randomVillageIndex = Math.floor(Math.random() * mockVillageIds.length);
+
+    records.push({
+      ...submissionData,
+      predictedRisk: dynamicSimulatedRisk,
+      villageId: mockVillageIds[randomVillageIndex]
+    });
+
+    // 3. POST the ENTIRE updated array back to npoint
+    const postResponse = await fetch(NPOINT_URL, {
+      method: 'POST', // npoint uses POST to update
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(records)
+    });
+
+    if (!postResponse.ok) {
+      throw new Error('Failed to submit data to npoint.');
     }
 
-    setIsSubmitting(true);
+    alert('Data submitted successfully!');
 
-    try {
-      const submissionData = {
-        ...formData,
-        id: `patient_${Date.now()}`,
-        submittedAt: new Date()?.toISOString(),
-        submittedBy: 'asha_worker',
-        syncStatus: isOffline ? 'pending' : 'synced'
-      };
+    // 4. Clear the form
+    setFormData({
+      patientId: '', name: '', age: '', gender: '', contactNumber: '',
+      address: '', symptoms: [], temperature: '', bloodPressure: '',
+      pulseRate: '', location: null,
+      visitDate: new Date().toISOString().split('T')[0]
+    });
+    localStorage.removeItem('patientDataDraft');
 
-      await onSubmit(submissionData);
-      
-      // Clear form and draft after successful submission
-      setFormData({
-        patientId: '',
-        name: '',
-        age: '',
-        gender: '',
-        contactNumber: '',
-        address: '',
-        symptoms: [],
-        temperature: '',
-        bloodPressure: '',
-        pulseRate: '',
-        location: null,
-        visitDate: new Date()?.toISOString()?.split('T')?.[0]
-      });
-      
-      localStorage.removeItem('patientDataDraft');
-      
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting data. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('An error occurred. Please check the console.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+// ... (rest of your component code below handleSubmit) ...
 
   const handleSaveDraft = () => {
     saveDraftToStorage();

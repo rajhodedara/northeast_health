@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // --- 1. IMPORT useNavigate ---
 import Header from '../../components/ui/Header';
 import PatientDataForm from './components/PatientDataForm';
 import WaterTestForm from './components/WaterTestForm';
@@ -9,6 +10,8 @@ import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 
 const AshaDataCollection = () => {
+  const navigate = useNavigate(); // --- 2. INITIALIZE useNavigate ---
+
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [syncStatus, setSyncStatus] = useState('synced');
@@ -156,9 +159,11 @@ const AshaDataCollection = () => {
     }, 2000);
   };
 
+  // --- 3. THIS FUNCTION IS NOW UPDATED ---
   const handleViewData = () => {
-    alert(`You have ${submittedData?.length} submitted forms. This would navigate to a data review page.`);
+    navigate('/data-log');
   };
+  // ------------------------------------
 
   const getPageTitle = () => {
     const titles = {
@@ -209,7 +214,7 @@ const AshaDataCollection = () => {
           {/* Back to Dashboard Button */}
           <Button
             variant="ghost"
-            onClick={() => window.location.href = '/district-officials-dashboard'}
+            onClick={() => navigate('/district-officials-dashboard')} // Using navigate here is better practice
             iconName="ArrowLeft"
             iconPosition="left"
             className="mb-4"
@@ -231,7 +236,7 @@ const AshaDataCollection = () => {
                 <QuickActionCards
                   onPatientFormClick={() => setActiveForm('patient')}
                   onWaterTestClick={() => setActiveForm('water')}
-                  onViewDataClick={handleViewData}
+                  onViewDataClick={handleViewData} // This now navigates
                   pendingCount={pendingCount}
                 />
               </div>
@@ -303,7 +308,7 @@ const AshaDataCollection = () => {
                       <div key={item?.id} className="p-4 flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            item?.type === 'patient' ?'bg-primary/10 text-primary' :'bg-secondary/10 text-secondary'
+                            item?.type === 'patient' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
                           }`}>
                             <Icon 
                               name={item?.type === 'patient' ? 'FileText' : 'Droplets'} 
@@ -320,7 +325,7 @@ const AshaDataCollection = () => {
                           </div>
                         </div>
                         <div className={`px-2 py-1 rounded-full text-xs font-caption ${
-                          item?.syncStatus === 'synced' ?'bg-success/10 text-success' :'bg-warning/10 text-warning'
+                          item?.syncStatus === 'synced' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'
                         }`}>
                           {item?.syncStatus === 'synced' ? 'Synced' : 'Pending'}
                         </div>
