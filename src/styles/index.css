@@ -1,0 +1,77 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter;
+}
+
+* {
+  box-sizing: border-box;
+  line-height: normal;
+  font-family: inherit;
+  margin: unset;
+}
+
+/* ----------------------------------------------------- */
+/* --- TAILWIND COLOR VARIABLE DEFINITIONS (The Fix) --- */
+/* ----------------------------------------------------- */
+
+/* 1. DEFAULT (LIGHT) MODE VARIABLES */
+:root {
+  /* Utility Variables */
+  --radius: 0.5rem; /* Default border radius lg */
+
+  /* Core Colors */
+  --color-border: #e5e7eb; /* gray-200 */
+  --color-input: #ffffff; /* white */
+  --color-background: #f8fafc; /* slate-50 (light background) */
+  --color-surface: #ffffff; /* white */
+
+  /* Text Colors */
+  --color-text-primary: #1f2937; /* gray-800 */
+  --color-text-secondary: #6b7280; /* gray-500 */
+
+  /* Themed Colors */
+  --color-primary: #1e40af; /* blue-800 */
+  --color-primary-foreground: #ffffff; /* white */
+
+  --color-secondary: #059669; /* emerald-600 */
+  --color-secondary-foreground: #ffffff; /* white */
+
+  --color-accent: #f3f4f6; /* slate-100 (hover background) */
+
+  --color-card: #ffffff; /* white */
+  --color-popover: #ffffff; /* white */
+
+  /* Status Colors */
+  --color-success: #10b981; /* emerald-500 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-error: #ef4444; /* red-500 */
+}
+
+/* 2. DARK MODE OVERRIDES (Applied when <html class="dark"> is present) */
+.dark {
+  /* Core Colors - Reverse for Dark Theme */
+  --color-background: #111827; /* Dark charcoal/near-black */
+  --color-surface: #1f2937; /* Slightly lighter surface for header/cards */
+  --color-border: #374151; /* Dark gray border */
+
+  /* Text Colors - Reverse */
+  --color-text-primary: #f3f4f6; /* Near white text */
+  --color-text-secondary: #9ca3af; /* Light gray secondary text */
+
+  /* Themed Colors - Made lighter to be visible on dark background */
+  --color-primary: #60a5fa; /* Lighter blue */
+  --color-primary-foreground: #111827; /* Dark text on primary */
+
+  --color-secondary: #34d399; /* Lighter emerald */
+
+  --color-accent: #374158; /* Accent hover background */
+
+  --color-card: #1f2937; /* Darker card background */
+  --color-popover: #1f2937; /* Darker popover background */
+
+  /* Status Colors - Must still stand out */
+  --color-success: #34d399;
+  --color-warning: #fcd34d;
+  --color-error: #f87171;
+}
